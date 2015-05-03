@@ -43,7 +43,7 @@ WooCommerce Export Customer Email simply adds a extra link under customers tab t
 ## Screenshots ##
 
 ### 1. Export customer email option ###
-![1. Export customer email option](http://ps.w.org/woocommerce-export-customer-email/assets/screenshot-1.png)
+![1. Export customer email option](https://raw.githubusercontent.com/mhmithu/woocommerce-export-customer-email/master/screenshot-1.jpg)
 
 
 
