@@ -3,14 +3,14 @@
  * Plugin Name: WooCommerce Export Customer Email
  * Plugin URI: https://github.com/mhmithu/woocommerce-export-customer-email
  * Description: Allows you to export all customer emails into a CSV file.
- * Version: 1.0
+ * Version: 1.1
  * Author: MH Mithu
  * Author URI: http://mithu.me/
  * License: GNU General Public License v3.0
  * License URI: http://www.gnu.org/licenses/gpl-3.0.html
  * 
  * ----------------------------------------------------------------------
- * Copyright (C) 2014  MH Mithu  (email: mail@mithu.me)
+ * Copyright (C) 2015  MH Mithu  (email: mail@mithu.me)
  * ----------------------------------------------------------------------
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,7 +44,6 @@ if ( is_plugin_active('woocommerce/woocommerce.php' ) ) {
          **/
         public function __construct() {
             add_action( 'init', array( $this, 'generate_csv' ) );
-            add_filter( 'mhm_exclude_data', array( $this, 'exclude_data' ) );
         }
 
         /**
@@ -60,68 +59,66 @@ if ( is_plugin_active('woocommerce/woocommerce.php' ) ) {
                 $sitename = sanitize_key( get_bloginfo( 'name' ) );
                 if ( ! empty( $sitename ) )
                     $sitename .= '.';
-                $filename = $sitename . date( 'ymdHis', time() ) . '.csv';
+                $filename = $sitename . date( 'ymdHis', current_time('timestamp') ) . '.csv';
+
+                $ids = $wpdb->get_col(
+                   "SELECT DISTINCT `order_id`
+                    FROM `{$wpdb->prefix}woocommerce_order_items`"
+                );
+
+                foreach( $ids as $id ) {
+                    $fname   = get_post_meta( $id, '_billing_first_name' );
+                    $lname   = get_post_meta( $id, '_billing_last_name' );
+                    $email[] = get_post_meta( $id, '_billing_email' );
+                    $name[]  = $fname[0].' '.$lname[0];
+                }
+
+                $email = wp_list_pluck( $email, 0 );
+
+                for( $i=0; $i<count($name); $i++ )
+                    $body[$i+1] = array( $name[$i], $email[$i] );
+
+                $headers = array( 'Customer_Name', 'Customer_Email' );
+                $body    = array( $headers ) + $body;
+                $temp    = fopen( 'php://memory', 'w' );
+
+                if( $_POST['cname'] == 'no' ) {
+                    for( $j=0; $j<=count($email); $j++ )
+                        unset( $body[$j][0] );
+                }
+
+                foreach( $body as $list )
+                    fputcsv( $temp, $list, ',' );
+
+                fseek( $temp, 0 );
+                fpassthru( $temp );
 
                 header( 'Content-Description: File Transfer' );
                 header( 'Content-Disposition: attachment; filename=' . $filename );
                 header( 'Content-Type: text/csv; charset=' . get_option( 'blog_charset' ), true );
 
-                $exclude_data = apply_filters( 'mhm_exclude_data', array() );
-
-                $data_keys = array( 'customer_email' );
-
-                $meta_keys = $wpdb->get_results( 
-                   "SELECT DISTINCT meta_value
-                    AS customer_email
-                    FROM $wpdb->postmeta
-                    WHERE meta_key = '_billing_email'
-                    ORDER BY meta_value ASC"
-                );
-
-                $meta_keys = wp_list_pluck( $meta_keys, 'customer_email' );
-                $fields = array_merge( $data_keys, $meta_keys );
-
-                $headers = array();
-                foreach ( $fields as $key => $field ) {
-                    if ( in_array( $field, $exclude_data ) )
-                        unset( $fields[$key] );
-                    else
-                        $headers[] = '"' . $field . '"';
-                }
-                print( implode( "\n", $headers ) );
-
                 exit(0);
             }
         }
 
-        /**
-         * Exclude data hook
-         * @access public
-         * @return array
-         */
-        public function exclude_data() {
-            $exclude = array( 'user_pass', 'user_activation_key' );
-            return $exclude;
-        }
 
         /**
          * Get current WooCommerce version
          * @access public
          * @return void
          */
-        public function get_wc_version() {        
+        public function get_wc_version() {
+            global $woocommerce;
             $plugin_folder = get_plugins('/' . 'woocommerce');
-            $plugin_file = 'woocommerce.php';
+            $plugin_file   = 'woocommerce.php';
+            $version = $plugin_folder[$plugin_file]['Version'];
 
-            if ( isset($plugin_folder[$plugin_file]['Version'] ) ) {
-                return $plugin_folder[$plugin_file]['Version'];
-            } else {
-                return NULL;
-            }
+            return isset($version) ? $version : $woocommerce->version;
         }
 
     }
 
+    // Object
     $export = new WC_Export_Customer_Email;
 
     /**
@@ -134,6 +131,25 @@ if ( is_plugin_active('woocommerce/woocommerce.php' ) ) {
 ?>
         <form method="post" action="" enctype="multipart/form-data">
             <?php wp_nonce_field( 'mhm-export-customer-email', '_wpnonce-mhm-export-customer-email' ); ?>
+            <table class="form-table">
+                <tbody>
+                    <tr>
+                        <th scope="row" class="titledesc"><label for="cname">Export customer name</label></th>
+                        <td class="forminp forminp-radio">
+                            <fieldset>
+                                <ul>
+                                    <li>
+                                        <label><input name="cname" value="yes" type="radio" checked="checked"> Yes</label>
+                                    </li>
+                                    <li>
+                                        <label><input name="cname" value="no" type="radio"> No</label>
+                                    </li>
+                                </ul>
+                            </fieldset>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
             <p class="submit">
                 <input type="hidden" name="_wp_http_referer" value="<?php echo $_SERVER['REQUEST_URI'] ?>" />
                 <input type="submit" class="button-primary" value="Export CSV" />
@@ -145,8 +161,8 @@ if ( is_plugin_active('woocommerce/woocommerce.php' ) ) {
     /**
      * Hooking into WooCommerce by checking current version
      **/
-    add_filter( 'woocommerce_reports_charts', 'export_to_csv' );
-    if ( version_compare( $export->get_wc_version(), '2.1.0', 'lt' ) ) {
+    if ( version_compare( $export->get_wc_version(), '2.1', 'lt' ) ) {
+        add_filter( 'woocommerce_reports_charts', 'export_to_csv' );
         function export_to_csv( $charts ) {
             $charts['export'] = array(
                 'title'  => 'Export',
@@ -162,9 +178,10 @@ if ( is_plugin_active('woocommerce/woocommerce.php' ) ) {
             return $charts;
         }
     } else {
+        add_filter( 'woocommerce_admin_reports', 'export_to_csv' );
         function export_to_csv( $reports ) {
             $reports['customers']['reports']['export'] = array(
-                'title'       => 'Export customer email',
+                'title'       => 'Export Customer Email',
                 'description' => 'Click on <strong>Export</strong> button to generate and download customer\'s billing email data into a CSV file.',
                 'hide_title'  => true,
                 'callback'    => 'export_action'

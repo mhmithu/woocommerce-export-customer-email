@@ -3,9 +3,10 @@ Contributors: mitcmt
 Plugin Site: http://mithu.me/
 Tags: woocommerce, customer, email, export
 Requires at least: 3.5
-Tested up to: 3.9.1
-Stable tag: 1.0
+Tested up to: 4.1.1
+Stable tag: 1.1
 License: GPLv3
+License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
 An essential feature for WooCommerce shop to export customer's billing emails from admin panel.
 
@@ -45,6 +46,16 @@ WooCommerce Export Customer Email simply adds a extra link under customers tab t
 
 
 == Changelog ==
+
+= v1.1 (11.04.2015) =
+* Update - Backwards compat hook.
+* Feature - Added coustomer name export option.
+* Tested - support for WooCommerce-2.1.0 or later.
+* Tested - compatibility up to WP-4.1.1
+
+= v1.0.1 (25.05.2014) =
+* Fix - File name with shop time.
+* Change - System time with shop time.
 
 = v1.0 (18.05.2014) =
 * First release.
