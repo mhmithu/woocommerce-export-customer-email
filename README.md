@@ -3,8 +3,8 @@
 **Plugin Site:** http://mithu.me/  
 **Tags:** woocommerce, customer, email, export  
 **Requires at least:** 3.5  
-**Tested up to:** 4.1.1  
-**Stable tag:** 1.1  
+**Tested up to:** 4.2.2  
+**Stable tag:** 1.2  
 **License:** GPLv3  
 **License URI:** http://www.gnu.org/licenses/gpl-3.0.html  
 
@@ -49,7 +49,12 @@ WooCommerce Export Customer Email simply adds a extra link under customers tab t
 
 ## Changelog ##
 
-### v1.1 (11.04.2015) ###
+### v1.2 (11.05.2015) ###
+* Feature - Added duplicate email remove option.
+* Tested - support for WooCommerce-2.3.8 or later.
+* Tested - compatibility up to WP-4.2.2
+
+### v1.1 (10.04.2015) ###
 * Update - Backwards compat hook.
 * Feature - Added coustomer name export option.
 * Tested - support for WooCommerce-2.1.0 or later.
