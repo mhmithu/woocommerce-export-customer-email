@@ -4,7 +4,7 @@ Plugin Site: http://mithu.me/
 Tags: woocommerce, customer, email, export
 Requires at least: 3.5
 Tested up to: 4.2.2
-Stable tag: 1.2
+Stable tag: 1.3
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -47,16 +47,28 @@ WooCommerce Export Customer Email simply adds a extra link under customers tab t
 
 == Changelog ==
 
+= v1.3 (17.05.2015) =
+* Fixed - Error control operator added.
+* Added - New class method.
+* Added - Output buffering functions.
+* Renamed - Class methods.
+* Renamed - Class properties.
+* Changed - File output stream.
+* Changed - Export options to inline.
+* Removed - Table fieldset.
+* Updated - File pointer functions.
+* Updated - HTTP headers.
+
 = v1.2 (11.05.2015) =
 * Feature - Added duplicate email remove option.
-* Tested - support for WooCommerce-2.3.8 or later.
-* Tested - compatibility up to WP-4.2.2
+* Tested - Support for WooCommerce-2.3.8 or later.
+* Tested - Compatibility up to WP-4.2.2
 
 = v1.1 (10.04.2015) =
 * Update - Backwards compat hook.
 * Feature - Added coustomer name export option.
-* Tested - support for WooCommerce-2.1.0 or later.
-* Tested - compatibility up to WP-4.1.1
+* Tested - Support for WooCommerce-2.1.0 or later.
+* Tested - Compatibility up to WP-4.1.1
 
 = v1.0.1 (25.05.2014) =
 * Fix - File name with shop time.

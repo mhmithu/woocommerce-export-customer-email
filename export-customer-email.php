@@ -3,7 +3,7 @@
  * Plugin Name: WooCommerce Export Customer Email
  * Plugin URI: https://github.com/mhmithu/woocommerce-export-customer-email
  * Description: Allows you to export all customer emails into a CSV file.
- * Version: 1.2
+ * Version: 1.3
  * Author: MH Mithu
  * Author URI: http://mithu.me/
  * License: GNU General Public License v3.0
@@ -44,8 +44,40 @@ if ( is_plugin_active( 'woocommerce/woocommerce.php' ) ) {
          * @return void
          * */
         public function __construct() {
-            add_action( 'init', array( $this, 'generate_csv' ) );
+            add_action( 'init', array( $this, 'csv_generate' ) );
         }
+
+
+        /**
+         * Preparing data
+         *
+         * @access private
+         * @return array
+         */
+        private function csv_data() {
+            global $wpdb;
+
+            $ids = $wpdb->get_col( "SELECT DISTINCT `order_id` FROM `{$wpdb->prefix}woocommerce_order_items`" );
+
+            foreach ( $ids as $id ) {
+                $fname   = get_post_meta( $id, '_billing_first_name' );
+                $lname   = get_post_meta( $id, '_billing_last_name' );
+                $email[] = get_post_meta( $id, '_billing_email' );
+                $name[]  = $fname[0].' '.$lname[0];
+            }
+
+            $email = wp_list_pluck( $email, 0 );
+
+            for ( $i = 0; $i < count( $name ); $i++ ) {
+                $body[$i+1] = array( $name[$i], $email[$i] );
+            }
+
+            $headers = array( 'Customer_Name', 'Customer_Email' );
+            $body    = array( $headers ) + $body;
+
+            return $body;
+        }
+
 
         /**
          * Process content of CSV file
@@ -53,57 +85,62 @@ if ( is_plugin_active( 'woocommerce/woocommerce.php' ) ) {
          * @access public
          * @return void
          * */
-        public function generate_csv() {
-            global $wpdb;
+        public function csv_generate() {
+
             if ( isset( $_POST['_wpnonce-mhm-export-customer-email'] ) ) {
                 check_admin_referer( 'mhm-export-customer-email', '_wpnonce-mhm-export-customer-email' );
 
                 $sitename = sanitize_key( get_bloginfo( 'name' ) );
+
                 if ( ! empty( $sitename ) )
                     $sitename .= '.';
+
                 $filename = $sitename . date( 'ymdHis', current_time( 'timestamp' ) ) . '.csv';
 
-                $ids = $wpdb->get_col(
-                    "SELECT DISTINCT `order_id`
-                    FROM `{$wpdb->prefix}woocommerce_order_items`"
-                );
-
-                foreach ( $ids as $id ) {
-                    $fname   = get_post_meta( $id, '_billing_first_name' );
-                    $lname   = get_post_meta( $id, '_billing_last_name' );
-                    $email[] = get_post_meta( $id, '_billing_email' );
-                    $name[]  = $fname[0].' '.$lname[0];
-                }
-
-                $email = wp_list_pluck( $email, 0 );
-
-                for ( $i=0; $i<count( $name ); $i++ )
-                    $body[$i+1] = array( $name[$i], $email[$i] );
-
-                $headers = array( 'Customer_Name', 'Customer_Email' );
-                $body    = array( $headers ) + $body;
-                $temp    = fopen( 'php://memory', 'w' );
+                $data = $this->csv_data();
 
                 if ( $_POST['cname'] == 'no' ) {
-                    for ( $j=0; $j<=count( $email ); $j++ )
-                        unset( $body[$j][0] );
+                    for ( $i = 0; $i < count( $data ); $i++ ) {
+                        unset( $data[$i][0] );
+                    }
                 }
 
-                if ( $_POST['duplicate'] == 'yes' )
-                    $body = array_map( 'unserialize', array_unique( array_map( 'serialize', $body ) ) );
+                if ( $_POST['duplicate'] == 'yes' ) {
+                    $data = array_map( 'unserialize', array_unique( array_map( 'serialize', $data ) ) );
+                }
 
-                foreach ( $body as $list )
-                    fputcsv( $temp, $list, ',' );
+                $this->csv_header( $filename );
+                ob_start();
 
-                fseek( $temp, 0 );
-                fpassthru( $temp );
+                $file = @fopen( 'php://output', 'w' );
 
-                header( 'Content-Description: File Transfer' );
-                header( 'Content-Disposition: attachment; filename=' . $filename );
-                header( 'Content-Type: text/csv; charset=' . get_option( 'blog_charset' ), true );
+                foreach ( $data as $list ) {
+                    @fputcsv( $file, $list, ',' );
+                }
 
-                exit( 0 );
+                @fclose( $file );
+
+                ob_end_flush();
+
+                exit();
             }
+        }
+
+
+        /**
+         * File headers
+         *
+         * @access private
+         * @param  string $filename
+         * @return void
+         */
+        private function csv_header( $filename ) {
+            send_nosniff_header();
+            nocache_headers();
+            @header( 'Content-Type: application/csv; charset=' . get_option( 'blog_charset' ), true );
+            @header( 'Content-Type: application/force-download' );
+            @header( 'Content-Description: File Transfer' );
+            @header( 'Content-Disposition: attachment; filename=' . $filename );
         }
 
 
@@ -137,39 +174,23 @@ if ( is_plugin_active( 'woocommerce/woocommerce.php' ) ) {
         if ( isset( $_GET['error'] ) ) {
             echo '<div class="updated"><p><strong>No email found.</strong></p></div>';
         }
-?>
+        ?>
         <form method="post" action="" enctype="multipart/form-data">
             <?php wp_nonce_field( 'mhm-export-customer-email', '_wpnonce-mhm-export-customer-email' ); ?>
             <table class="form-table">
                 <tbody>
                     <tr>
                         <th scope="row" class="titledesc"><label for="cname">Export customer name</label></th>
-                        <td class="forminp forminp-radio">
-                            <fieldset>
-                                <ul>
-                                    <li>
-                                        <label><input name="cname" value="yes" type="radio" checked="checked"> Yes</label>
-                                    </li>
-                                    <li>
-                                        <label><input name="cname" value="no" type="radio"> No</label>
-                                    </li>
-                                </ul>
-                            </fieldset>
+                        <td>
+                            <label><input name="cname" value="yes" type="radio" checked="checked"> Yes</label>&nbsp;&nbsp;&nbsp;
+                            <label><input name="cname" value="no" type="radio"> No</label>
                         </td>
                     </tr>
                     <tr>
                         <th scope="row" class="titledesc"><label for="duplicate">Remove duplicate emails</label></th>
-                        <td class="forminp forminp-radio">
-                            <fieldset>
-                                <ul>
-                                    <li>
-                                        <label><input name="duplicate" value="yes" type="radio"> Yes</label>
-                                    </li>
-                                    <li>
-                                        <label><input name="duplicate" value="no" type="radio" checked="checked"> No</label>
-                                    </li>
-                                </ul>
-                            </fieldset>
+                        <td>
+                            <label><input name="duplicate" value="yes" type="radio"> Yes</label>&nbsp;&nbsp;&nbsp;
+                            <label><input name="duplicate" value="no" type="radio" checked="checked"> No</label>
                         </td>
                     </tr>
                 </tbody>
@@ -179,7 +200,7 @@ if ( is_plugin_active( 'woocommerce/woocommerce.php' ) ) {
                 <input type="submit" class="button-primary" value="Export CSV" />
             </p>
         </form>
-<?php
+    <?php
     }
 
     /**
@@ -195,8 +216,8 @@ if ( is_plugin_active( 'woocommerce/woocommerce.php' ) ) {
                         'description' => 'Click on <strong>Export</strong> button to generate and download customer\'s billing email data into a CSV file.',
                         'hide_title'  => false,
                         'function'    => 'export_action'
-                    ),
-                ),
+                    )
+                )
             );
             return $charts;
         }
@@ -214,7 +235,9 @@ if ( is_plugin_active( 'woocommerce/woocommerce.php' ) ) {
         add_filter( 'woocommerce_admin_reports', 'export_to_csv' );
     }
 
-    // Fallback admin notice
+/**
+ * Fallback admin notice
+ */
 } else {
     function wc_export_error_notice() {
         global $current_screen;

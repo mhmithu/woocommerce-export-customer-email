@@ -1,12 +1,12 @@
 # WooCommerce Export Customer Email #
-**Contributors:** mitcmt  
-**Plugin Site:** http://mithu.me/  
-**Tags:** woocommerce, customer, email, export  
-**Requires at least:** 3.5  
-**Tested up to:** 4.2.2  
-**Stable tag:** 1.2  
-**License:** GPLv3  
-**License URI:** http://www.gnu.org/licenses/gpl-3.0.html  
+**Contributors:** mitcmt
+**Plugin Site:** http://mithu.me/
+**Tags:** woocommerce, customer, email, export
+**Requires at least:** 3.5
+**Tested up to:** 4.2.2
+**Stable tag:** 1.3
+**License:** GPLv3
+**License URI:** http://www.gnu.org/licenses/gpl-3.0.html
 
 An essential feature for WooCommerce shop to export customer's billing emails from admin panel.
 
@@ -48,6 +48,18 @@ WooCommerce Export Customer Email simply adds a extra link under customers tab t
 
 
 ## Changelog ##
+
+### v1.3 (17.05.2015) ###
+* Fixed - Error control operator added.
+* Added - New class method.
+* Added - Output buffering functions.
+* Renamed - Class methods.
+* Renamed - Class properties.
+* Changed - File output stream.
+* Changed - Export options to inline.
+* Removed - Table fieldset.
+* Updated - File pointer functions.
+* Updated - HTTP headers.
 
 ### v1.2 (11.05.2015) ###
 * Feature - Added duplicate email remove option.
