@@ -1,0 +1,92 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: WooCommerce Export Customer Email\n"
+"POT-Creation-Date: 2015-05-26 10:17+0100\n"
+"PO-Revision-Date: 2015-05-26 10:30+0100\n"
+"Last-Translator: Vincent Saisset <vs@extralagence.com>\n"
+"Language-Team: Vincent Saisset <vs@extralagence.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.8\n"
+"X-Poedit-Basepath: ..\n"
+"X-Poedit-WPHeader: export-customer-email.php\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-KeywordsList: __;_e;_n:1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;esc_attr__;"
+"esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c;"
+"_n_noop:1,2;_nx_noop:3c,1,2;__ngettext_noop:1,2\n"
+"Language: en\n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPathExcluded-0: *.js\n"
+
+#: export-customer-email.php:77
+msgid "Customer_Name"
+msgstr ""
+
+#: export-customer-email.php:77
+msgid "Customer_Email"
+msgstr ""
+
+#: export-customer-email.php:177
+msgid "No email found."
+msgstr ""
+
+#: export-customer-email.php:185
+msgid "Export customer name"
+msgstr ""
+
+#: export-customer-email.php:187 export-customer-email.php:194
+msgid "Yes"
+msgstr ""
+
+#: export-customer-email.php:188 export-customer-email.php:195
+msgid "No"
+msgstr ""
+
+#: export-customer-email.php:192
+msgid "Remove duplicate emails"
+msgstr ""
+
+#: export-customer-email.php:202
+msgid "Export CSV"
+msgstr ""
+
+#: export-customer-email.php:217 export-customer-email.php:230
+msgid "Export customer email"
+msgstr ""
+
+#: export-customer-email.php:218 export-customer-email.php:231
+msgid ""
+"Click on <strong>Export</strong> button to generate and download customer's "
+"billing email data into a CSV file."
+msgstr ""
+
+#: export-customer-email.php:247
+#, php-format
+msgid ""
+"The <strong>WooCommerce Export Customer Email</strong> plugin requires the "
+"<a href=\"%s\" target=\"_blank\">WooCommerce</a> plugin to be activated in "
+"order to work. Please <a href=\"%s\" target=\"_blank\">install WooCommerce</"
+"a> or <a href=\"%s\">activate</a> first."
+msgstr ""
+
+#. Plugin Name of the plugin/theme
+msgid "WooCommerce Export Customer Email"
+msgstr ""
+
+#. Plugin URI of the plugin/theme
+msgid "https://github.com/mhmithu/woocommerce-export-customer-email"
+msgstr ""
+
+#. Description of the plugin/theme
+msgid "Allows you to export all customer emails into a CSV file."
+msgstr ""
+
+#. Author of the plugin/theme
+msgid "MH Mithu"
+msgstr ""
+
+#. Author URI of the plugin/theme
+msgid "http://mithu.me/"
+msgstr ""
