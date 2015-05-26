@@ -45,6 +45,8 @@ if ( is_plugin_active( 'woocommerce/woocommerce.php' ) ) {
          * */
         public function __construct() {
             add_action( 'init', array( $this, 'csv_generate' ) );
+
+            $is_loaded = load_plugin_textdomain( 'woocommerce-export-customer-email', false, plugin_basename( dirname( __FILE__ ) ) . "/languages" );
         }
 
 
@@ -72,7 +74,7 @@ if ( is_plugin_active( 'woocommerce/woocommerce.php' ) ) {
                 $body[$i+1] = array( $name[$i], $email[$i] );
             }
 
-            $headers = array( 'Customer_Name', 'Customer_Email' );
+            $headers = array( __('Customer_Name', 'woocommerce-export-customer-email'), __('Customer_Email', 'woocommerce-export-customer-email') );
             $body    = array( $headers ) + $body;
 
             return $body;
@@ -172,7 +174,7 @@ if ( is_plugin_active( 'woocommerce/woocommerce.php' ) ) {
      */
     function export_action() {
         if ( isset( $_GET['error'] ) ) {
-            echo '<div class="updated"><p><strong>No email found.</strong></p></div>';
+            echo '<div class="updated"><p><strong>'.__('No email found.', 'woocommerce-export-customer-email').'</strong></p></div>';
         }
         ?>
         <form method="post" action="" enctype="multipart/form-data">
@@ -180,24 +182,24 @@ if ( is_plugin_active( 'woocommerce/woocommerce.php' ) ) {
             <table class="form-table">
                 <tbody>
                     <tr>
-                        <th scope="row" class="titledesc"><label for="cname">Export customer name</label></th>
+                        <th scope="row" class="titledesc"><label for="cname"><?php _e('Export customer name', 'woocommerce-export-customer-email'); ?></label></th>
                         <td>
-                            <label><input name="cname" value="yes" type="radio" checked="checked"> Yes</label>&nbsp;&nbsp;&nbsp;
-                            <label><input name="cname" value="no" type="radio"> No</label>
+                            <label><input name="cname" value="yes" type="radio" checked="checked"> <?php _e('Yes', 'woocommerce-export-customer-email'); ?></label>&nbsp;&nbsp;&nbsp;
+                            <label><input name="cname" value="no" type="radio"> <?php _e('No', 'woocommerce-export-customer-email'); ?></label>
                         </td>
                     </tr>
                     <tr>
-                        <th scope="row" class="titledesc"><label for="duplicate">Remove duplicate emails</label></th>
+                        <th scope="row" class="titledesc"><label for="duplicate"><?php _e('Remove duplicate emails', 'woocommerce-export-customer-email'); ?></label></th>
                         <td>
-                            <label><input name="duplicate" value="yes" type="radio"> Yes</label>&nbsp;&nbsp;&nbsp;
-                            <label><input name="duplicate" value="no" type="radio" checked="checked"> No</label>
+                            <label><input name="duplicate" value="yes" type="radio"> <?php _e('Yes', 'woocommerce-export-customer-email'); ?></label>&nbsp;&nbsp;&nbsp;
+                            <label><input name="duplicate" value="no" type="radio" checked="checked"> <?php _e('No', 'woocommerce-export-customer-email'); ?></label>
                         </td>
                     </tr>
                 </tbody>
             </table>
             <p class="submit">
                 <input type="hidden" name="_wp_http_referer" value="<?php echo $_SERVER['REQUEST_URI'] ?>" />
-                <input type="submit" class="button-primary" value="Export CSV" />
+                <input type="submit" class="button-primary" value="<?php _e('Export CSV', 'woocommerce-export-customer-email'); ?>" />
             </p>
         </form>
     <?php
@@ -212,8 +214,8 @@ if ( is_plugin_active( 'woocommerce/woocommerce.php' ) ) {
                 'title'  => 'Export',
                 'charts' => array(
                     "overview" => array(
-                        'title'       => 'Export customer email',
-                        'description' => 'Click on <strong>Export</strong> button to generate and download customer\'s billing email data into a CSV file.',
+                        'title'       => __('Export customer email', 'woocommerce-export-customer-email'),
+                        'description' => __('Click on <strong>Export</strong> button to generate and download customer\'s billing email data into a CSV file.', 'woocommerce-export-customer-email'),
                         'hide_title'  => false,
                         'function'    => 'export_action'
                     )
@@ -225,8 +227,8 @@ if ( is_plugin_active( 'woocommerce/woocommerce.php' ) ) {
     } else {
         function export_to_csv( $reports ) {
             $reports['customers']['reports']['export'] = array(
-                'title'       => 'Export Customer Email',
-                'description' => 'Click on <strong>Export</strong> button to generate and download customer\'s billing email data into a CSV file.',
+                'title'       => __('Export customer email', 'woocommerce-export-customer-email'),
+                'description' => __('Click on <strong>Export</strong> button to generate and download customer\'s billing email data into a CSV file.', 'woocommerce-export-customer-email'),
                 'hide_title'  => true,
                 'callback'    => 'export_action'
             );
@@ -242,7 +244,7 @@ if ( is_plugin_active( 'woocommerce/woocommerce.php' ) ) {
     function wc_export_error_notice() {
         global $current_screen;
         if ( $current_screen->parent_base == 'plugins' ) {
-            echo '<div class="error"><p>The <strong>WooCommerce Export Customer Email</strong> plugin requires the <a href="http://wordpress.org/plugins/woocommerce" target="_blank">WooCommerce</a> plugin to be activated in order to work. Please <a href="'.admin_url( 'plugin-install.php?tab=search&type=term&s=WooCommerce' ).'" target="_blank">install WooCommerce</a> or <a href="'.admin_url( 'plugins.php' ).'">activate</a> first.</p></div>';
+            echo '<div class="error"><p>'.sprintf(__('The <strong>WooCommerce Export Customer Email</strong> plugin requires the <a href="%s" target="_blank">WooCommerce</a> plugin to be activated in order to work. Please <a href="%s" target="_blank">install WooCommerce</a> or <a href="%s">activate</a> first.', 'woocommerce-export-customer-email'), 'http://wordpress.org/plugins/woocommerce', admin_url( 'plugin-install.php?tab=search&type=term&s=WooCommerce', admin_url( 'plugins.php' ) )).'</p></div>';
         }
     }
     add_action( 'admin_notices', 'wc_export_error_notice' );
