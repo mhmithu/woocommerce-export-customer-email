@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WooCommerce Export Customer Email\n"
 "POT-Creation-Date: 2015-05-26 10:17+0100\n"
-"PO-Revision-Date: 2015-05-26 10:30+0100\n"
+"PO-Revision-Date: 2015-05-26 10:34+0100\n"
 "Last-Translator: Vincent Saisset <vs@extralagence.com>\n"
 "Language-Team: Vincent Saisset <vs@extralagence.com>\n"
 "Language: fr\n"
@@ -54,7 +54,7 @@ msgstr "Exporter"
 
 #: export-customer-email.php:217 export-customer-email.php:230
 msgid "Export customer email"
-msgstr "Exporter l’email des clients"
+msgstr "Export des emails clients"
 
 #: export-customer-email.php:218 export-customer-email.php:231
 msgid ""
