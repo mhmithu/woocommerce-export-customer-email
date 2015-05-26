@@ -47,7 +47,6 @@ if ( is_plugin_active( 'woocommerce/woocommerce.php' ) ) {
             add_action( 'init', array( $this, 'csv_generate' ) );
 
             $is_loaded = load_plugin_textdomain( 'woocommerce-export-customer-email', false, plugin_basename( dirname( __FILE__ ) ) . "/languages" );
-			var_dump($is_loaded);
         }
 
 
